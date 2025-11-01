@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use crate::{
-	actor::{Actor, ActorRegistry},
+	actor::{Actor, ActorId, ActorRegistry},
 	instance,
 	tick::listener::TickListener,
 };
@@ -23,6 +23,17 @@ impl World {
 		self.registry.add_actor(actor.clone());
 		actor.on_begin_play();
 		actor
+	}
+
+	/// Despawn by id. Calls `on_end_play` and removes the actor from the registry.
+	/// Returns true if an actor was removed.
+	pub fn despawn_actor(&self, id: ActorId) -> bool {
+		if let Some(actor) = self.registry.remove_actor(id) {
+			actor.on_end_play();
+			true
+		} else {
+			false
+		}
 	}
 
 	/// Get len of total actors
