@@ -1,7 +1,6 @@
-use std::{
-	any::Any,
-	sync::{Arc, RwLock},
-};
+use std::{any::Any, sync::Arc};
+
+use parking_lot::RwLock;
 
 use crate::actor::Actor;
 
@@ -24,7 +23,7 @@ impl ActorRegistry {
 	pub fn add_actor<A: Actor>(&self, actor: Arc<A>) {
 		let erased: Arc<dyn Any + Send + Sync> = actor.clone();
 		let dyn_actor: Arc<dyn Actor> = actor;
-		let mut guard = self.actors.write().unwrap();
+		let mut guard = self.actors.write();
 		guard.push(ActorEntry {
 			erased,
 			actor: dyn_actor,
@@ -32,12 +31,12 @@ impl ActorRegistry {
 	}
 
 	pub fn len(&self) -> usize {
-		self.actors.read().unwrap().len()
+		self.actors.read().len()
 	}
 
 	/// Get the first actor of a class `A` as `Arc<A>`.
 	pub fn get_actor_of_class<A: Actor>(&self) -> Option<Arc<A>> {
-		let guard = self.actors.read().unwrap();
+		let guard = self.actors.read();
 		for entry in guard.iter() {
 			if let Ok(a) = Arc::downcast::<A>(entry.erased.clone()) {
 				return Some(a);
@@ -48,7 +47,7 @@ impl ActorRegistry {
 
 	/// Get all actors of a class.
 	pub fn get_all_of_class<A: Actor>(&self) -> Vec<Arc<A>> {
-		let guard = self.actors.read().unwrap();
+		let guard = self.actors.read();
 		let mut out = Vec::new();
 		for entry in guard.iter() {
 			if let Ok(a) = Arc::downcast::<A>(entry.erased.clone()) {
@@ -59,14 +58,14 @@ impl ActorRegistry {
 	}
 
 	pub fn broadcast_tick(&self, dt: f64) {
-		let guard = self.actors.read().unwrap();
+		let guard = self.actors.read();
 		for entry in guard.iter() {
 			entry.actor.on_tick(dt as f32);
 		}
 	}
 
 	pub fn broadcast_end_play(&self) {
-		let guard = self.actors.read().unwrap();
+		let guard = self.actors.read();
 		for entry in guard.iter() {
 			entry.actor.on_end_play();
 		}

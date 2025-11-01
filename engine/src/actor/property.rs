@@ -1,4 +1,4 @@
-use std::sync::RwLock;
+use parking_lot::RwLock;
 
 pub struct Property<T>(RwLock<T>);
 
@@ -9,7 +9,7 @@ impl<T> Property<T> {
 
 	/// Replace the value
 	pub fn set(&self, value: T) {
-		*self.0.write().expect("property poisoned") = value;
+		*self.0.write() = value;
 	}
 
 	/// Get a cloned value
@@ -17,16 +17,16 @@ impl<T> Property<T> {
 	where
 		T: Clone,
 	{
-		self.0.read().expect("property poisoned").clone()
+		self.0.read().clone()
 	}
 
 	/// Read-only function access without cloning
 	pub fn with<R>(&self, f: impl FnOnce(&T) -> R) -> R {
-		f(&*self.0.read().expect("property poisoned"))
+		f(&*self.0.read())
 	}
 
 	/// In-place mutation
 	pub fn update(&self, f: impl FnOnce(&mut T)) {
-		f(&mut *self.0.write().expect("property poisoned"));
+		f(&mut *self.0.write());
 	}
 }
