@@ -20,7 +20,7 @@ impl Actor for Example2Actor {
 		println!("finished sleep, this shouldn't have blocked tick")
 	}
 
-	fn on_tick(&self, dt: f32) {
+	fn on_tick(&self, dt: f64) {
 		println!("tick {dt} id={:?} and blocking with 2500", self.get_id());
 		std::thread::sleep(std::time::Duration::from_millis(2500));
 		println!("tick {dt} id={:?} and done blocking", self.get_id());

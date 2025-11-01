@@ -4,7 +4,7 @@ pub trait Actor: ActorBase {
 	fn on_begin_play(&self) {
 		println!("Default begin_play()");
 	}
-	fn on_tick(&self, _dt: f32) {
+	fn on_tick(&self, _dt: f64) {
 		println!("Default on_tick()");
 	}
 	fn on_end_play(&self) {

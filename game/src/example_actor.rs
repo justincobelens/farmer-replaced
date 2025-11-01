@@ -18,7 +18,7 @@ impl Actor for ExampleActor {
 		println!("begin_play id={:?}", self.get_id());
 	}
 
-	fn on_tick(&self, dt: f32) {
+	fn on_tick(&self, dt: f64) {
 		println!("tick {dt} id={:?}", self.get_id());
 	}
 

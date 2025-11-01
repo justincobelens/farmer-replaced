@@ -1,5 +1,6 @@
 mod actor;
 pub mod base;
+mod entry;
 mod id;
 mod macros;
 mod property;
