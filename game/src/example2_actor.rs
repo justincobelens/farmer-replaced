@@ -21,7 +21,9 @@ impl Actor for Example2Actor {
 	}
 
 	fn on_tick(&self, dt: f32) {
-		println!("tick {dt} id={:?}", self.get_id());
+		println!("tick {dt} id={:?} and blocking with 2500", self.get_id());
+		std::thread::sleep(std::time::Duration::from_millis(2500));
+		println!("tick {dt} id={:?} and done blocking", self.get_id());
 	}
 
 	fn name(&self) -> &'static str {

@@ -4,7 +4,7 @@ use std::{
 	sync::{Arc, OnceLock, RwLock},
 };
 
-use crate::{World, actor::ActorId};
+use crate::{World, actor::ActorId, tick::runtime::TickRuntime};
 
 static INSTANCE: OnceLock<Arc<GameInstance>> = OnceLock::new();
 
@@ -19,15 +19,20 @@ pub struct GameInstance {
 	next_actor_id: AtomicU64,
 	worlds: RwLock<HashMap<WorldId, Arc<World>>>,
 	active: RwLock<Option<WorldId>>,
+	tick: Arc<TickRuntime>,
 }
 
 impl GameInstance {
 	fn new() -> Self {
+		let tick = TickRuntime::variable(1.0);
+		tick.clone().start_thread();
+
 		Self {
 			next_world_id: AtomicU64::new(1),
 			next_actor_id: AtomicU64::new(1),
 			worlds: RwLock::new(HashMap::new()),
 			active: RwLock::new(None),
+			tick,
 		}
 	}
 
@@ -38,6 +43,8 @@ impl GameInstance {
 	pub fn create_world(&self) -> WorldId {
 		let id = self.next_world_id.fetch_add(1, Ordering::Relaxed);
 		let world = World::new();
+
+		self.tick.subscribe(world.clone());
 		self.worlds.write().expect("worlds poisoned").insert(id, world);
 		// initialize active if not set
 		let mut active = self.active.write().expect("active poisoned");
@@ -63,6 +70,14 @@ impl GameInstance {
 
 	pub fn get_world(&self, id: WorldId) -> Option<Arc<World>> {
 		self.worlds.read().expect("worlds poisoned").get(&id).cloned()
+	}
+
+	pub fn resume_tick(&self) {
+		self.tick.resume();
+	}
+
+	pub fn pause_tick(&self) {
+		self.tick.pause();
 	}
 
 	/// Engine wide unique actor IDs

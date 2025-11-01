@@ -2,56 +2,28 @@ use std::sync::Arc;
 use std::thread;
 use tokio::time::{self, Duration, Instant, MissedTickBehavior};
 
-use crate::utility::Toggle;
-
-pub trait TickListener: Send + Sync + 'static {
-	fn on_tick(&self, dt: f64);
-}
-
-#[derive(Default)]
-pub struct TickBus {
-	listeners: parking_lot::RwLock<Vec<Arc<dyn TickListener>>>,
-}
-
-impl TickBus {
-	pub fn new() -> Self {
-		Self {
-			listeners: parking_lot::RwLock::new(Vec::new()),
-		}
-	}
-
-	pub fn subscribe(&self, l: Arc<dyn TickListener>) {
-		self.listeners.write().push(l);
-	}
-
-	pub fn broadcast(&self, dt: f64) {
-		// no alloc, no clone, just walk the slice
-		let guard = self.listeners.read();
-		for l in guard.iter() {
-			l.on_tick(dt);
-		}
-	}
-}
+use crate::{
+	tick::{bus::TickBus, listener::TickListener},
+	utility::Toggle,
+};
 
 pub struct TickRuntime {
 	toggle: Toggle,
 	bus: Arc<TickBus>,
 	hz: f64,
-	clamp_factor: f64,
 }
 
 impl TickRuntime {
-	pub fn variable_only(hz: f64) -> Arc<Self> {
+	pub fn variable(hz: f64) -> Arc<Self> {
 		Arc::new(Self {
 			toggle: Toggle::init_off(),
 			bus: Arc::new(TickBus::new()),
 			hz,
-			clamp_factor: 2.0,
 		})
 	}
 
-	pub fn bus(&self) -> Arc<TickBus> {
-		self.bus.clone()
+	pub fn subscribe(&self, object: Arc<dyn TickListener>) {
+		self.bus.subscribe(object);
 	}
 
 	pub fn resume(&self) {
@@ -76,7 +48,6 @@ impl TickRuntime {
 		interval.set_missed_tick_behavior(MissedTickBehavior::Skip);
 
 		let mut last = Instant::now();
-		let max_dt = Duration::from_secs_f64(period.as_secs_f64() * self.clamp_factor);
 
 		loop {
 			interval.tick().await;
@@ -88,12 +59,8 @@ impl TickRuntime {
 			}
 
 			let now = Instant::now();
-			let mut dt = now - last;
+			let dt = now - last;
 			last = now;
-
-			if dt > max_dt {
-				dt = period; // clamp
-			}
 
 			self.bus.broadcast(dt.as_secs_f64());
 		}

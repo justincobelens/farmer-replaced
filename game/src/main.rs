@@ -1,18 +1,19 @@
-use engine::utility::functions::new_active_world;
+use engine::{instance, utility::functions::new_active_world};
 use game::{Example2Actor, ExampleActor};
 
 #[tokio::main]
 async fn main() {
 	let world = new_active_world();
+	instance().resume_tick();
 
-	world.spawn_actor(ExampleActor::new()).await;
-	println!("count: {}", world.get_actor_count().await);
+	world.spawn_actor(ExampleActor::new());
+	println!("count: {}", world.get_actor_count());
 
-	world.spawn_actor(Example2Actor::new()).await;
-	println!("count: {}", world.get_actor_count().await);
+	world.spawn_actor(Example2Actor::new());
+	println!("count: {}", world.get_actor_count());
 
-	let actor = world.get_actor_of_class::<ExampleActor>().await.unwrap();
-	let actor2 = world.get_actor_of_class::<Example2Actor>().await.unwrap();
+	let actor = world.get_actor_of_class::<ExampleActor>().unwrap();
+	let actor2 = world.get_actor_of_class::<Example2Actor>().unwrap();
 
 	actor.example_method();
 	actor2.another_example_method();
