@@ -1,6 +1,17 @@
-[package]
-name = "farmer-replaced"
-version = "0.1.0"
-edition = "2024"
+[workspace]
+resolver = "2"
+default-members = ["engine"]
+members = ["engine", "game"]
 
-[dependencies]
+[profile.dev]
+debug = 0
+
+[workspace.lints.clippy]
+all = { level = "deny", priority = -1 }
+unsafe_code = "forbid"
+missing_safety_doc = "allow"
+module_inception = "allow"
+result_large_err = "allow"
+wildcard_imports = "deny"
+# unused = { level = "allow", priority = -1 } # For exploratory dev.
+# missing_docs = "warn"
