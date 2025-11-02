@@ -1,6 +1,7 @@
 pub mod actor;
 pub mod error;
 pub mod game_instance;
+pub mod math;
 pub mod tick;
 pub mod utility;
 pub mod world;

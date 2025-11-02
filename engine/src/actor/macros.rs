@@ -9,14 +9,17 @@ macro_rules! actor {
             // engine-owned id storage (not public)
             id: $crate::actor::Property<$crate::actor::ActorId>,
 
+            pub transform: $crate::actor::Property<$crate::math::Transform>,
+
             // user gameplay fields
             $( pub $field : $crate::actor::Property<$ty> ),*
         }
 
         impl $name {
-            pub fn new() -> Self {
+            pub fn new(transform: $crate::math::Transform) -> Self {
                 Self {
                     id: $crate::actor::Property::new($crate::actor::ActorId::INVALID),
+                    transform: $crate::actor::Property::new(transform),
                     $( $field : $crate::actor::Property::new($init) ),*
                 }
             }
