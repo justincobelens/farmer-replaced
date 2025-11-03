@@ -1,4 +1,4 @@
-use engine::{instance, utility::functions::new_active_world};
+use engine::{instance, math::Transform, utility::functions::new_active_world};
 use game::{Example2Actor, ExampleActor};
 
 #[tokio::main]
@@ -6,10 +6,11 @@ async fn main() {
 	let world = new_active_world();
 	instance().resume_tick();
 
-	world.spawn_actor(ExampleActor::new());
+	world.spawn_actor(ExampleActor::new(Transform::default()));
 	println!("count: {}", world.get_actor_count());
 
-	world.spawn_actor(Example2Actor::new());
+	world.spawn_actor(Example2Actor::new(Transform::default()));
+
 	println!("count: {}", world.get_actor_count());
 
 	let actor = world.get_actor_of_class::<ExampleActor>().unwrap();
