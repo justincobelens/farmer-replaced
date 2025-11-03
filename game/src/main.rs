@@ -23,8 +23,6 @@ async fn main() {
 
 	actor2.health.set(99);
 
-	actor.health.update(|h| *h += 1);
-
 	let id = actor.get_id();
 	println!("actor id: {:?}", id);
 

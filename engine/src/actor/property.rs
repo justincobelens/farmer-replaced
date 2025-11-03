@@ -19,14 +19,4 @@ impl<T> Property<T> {
 	{
 		self.0.read().clone()
 	}
-
-	/// Read-only function access without cloning
-	pub fn with<R>(&self, f: impl FnOnce(&T) -> R) -> R {
-		f(&*self.0.read())
-	}
-
-	/// In-place mutation
-	pub fn update(&self, f: impl FnOnce(&mut T)) {
-		f(&mut *self.0.write());
-	}
 }

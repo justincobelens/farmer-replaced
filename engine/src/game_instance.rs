@@ -1,8 +1,10 @@
 use std::{
 	collections::HashMap,
 	sync::atomic::{AtomicU64, Ordering},
-	sync::{Arc, OnceLock, RwLock},
+	sync::{Arc, OnceLock},
 };
+
+use parking_lot::RwLock;
 
 use crate::{World, actor::ActorId, tick::runtime::TickRuntime};
 
@@ -45,9 +47,9 @@ impl GameInstance {
 		let world = World::new();
 
 		self.tick.subscribe(world.clone());
-		self.worlds.write().expect("worlds poisoned").insert(id, world);
+		self.worlds.write().insert(id, world);
 		// initialize active if not set
-		let mut active = self.active.write().expect("active poisoned");
+		let mut active = self.active.write();
 		if active.is_none() {
 			*active = Some(id);
 		}
@@ -55,21 +57,21 @@ impl GameInstance {
 	}
 
 	pub fn set_active_world(&self, id: WorldId) -> bool {
-		if !self.worlds.read().expect("worlds poisoned").contains_key(&id) {
+		if !self.worlds.read().contains_key(&id) {
 			return false;
 		}
-		*self.active.write().expect("active poisoned") = Some(id);
+		*self.active.write() = Some(id);
 		true
 	}
 
 	pub fn active_world(&self) -> Option<Arc<World>> {
-		let id = *self.active.read().expect("active poisoned");
+		let id = *self.active.read();
 		let id = id?;
-		self.worlds.read().expect("worlds poisoned").get(&id).cloned()
+		self.worlds.read().get(&id).cloned()
 	}
 
 	pub fn get_world(&self, id: WorldId) -> Option<Arc<World>> {
-		self.worlds.read().expect("worlds poisoned").get(&id).cloned()
+		self.worlds.read().get(&id).cloned()
 	}
 
 	pub fn resume_tick(&self) {
