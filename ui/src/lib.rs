@@ -1,5 +1,4 @@
 pub mod ui {
-	use std::sync::Arc;
 
 	pub struct UiObject {}
 

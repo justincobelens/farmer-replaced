@@ -18,9 +18,6 @@ impl Example2Actor {
 impl Actor for Example2Actor {
 	fn on_begin_play(&self) {
 		self.health.set(32);
-		println!("begin_play with 10 sec sleep id={:?}", self.get_id());
-		std::thread::sleep(std::time::Duration::from_secs(10));
-		println!("finished sleep, this shouldn't have blocked tick")
 	}
 
 	fn on_tick(&self, _dt: f64) {
