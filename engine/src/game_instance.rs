@@ -1,7 +1,10 @@
 use std::{
 	collections::HashMap,
-	sync::atomic::{AtomicU64, Ordering},
-	sync::{Arc, OnceLock},
+	sync::{
+		Arc, OnceLock,
+		atomic::{AtomicBool, AtomicU64, Ordering},
+	},
+	{thread, time::Duration},
 };
 
 use parking_lot::RwLock;
@@ -23,6 +26,7 @@ pub struct GameInstance {
 	active: RwLock<Option<WorldId>>,
 	tick: Arc<TickRuntime>,
 	ui: Arc<UiObject>,
+	running: AtomicBool,
 }
 
 impl GameInstance {
@@ -40,6 +44,7 @@ impl GameInstance {
 			active: RwLock::new(None),
 			tick,
 			ui,
+			running: AtomicBool::new(true),
 		}
 	}
 
@@ -95,5 +100,23 @@ impl GameInstance {
 	pub fn alloc_actor_id(&self) -> ActorId {
 		let n = self.next_actor_id.fetch_add(1, Ordering::Relaxed);
 		ActorId(n)
+	}
+
+	// Request the main loop to exit
+	pub fn request_exit(&self) {
+		self.running.store(false, Ordering::SeqCst);
+	}
+
+	/// Block the current thread until `request_exit` is called.
+	pub fn run_forever(&self) {
+		// Ensure start in a running state
+		self.running.store(true, Ordering::SeqCst);
+
+		loop {
+			if !self.running.load(Ordering::SeqCst) {
+				break;
+			}
+			thread::sleep(Duration::from_millis(16));
+		}
 	}
 }

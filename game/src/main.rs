@@ -28,7 +28,7 @@ async fn main() {
 
 	actor2.health.set(199);
 
+	instance().run_forever();
+
 	world.shutdown();
-	let id = actor.get_id();
-	println!("actor id: {:?}", id);
 }
