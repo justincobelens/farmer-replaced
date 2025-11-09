@@ -16,10 +16,11 @@ impl ExampleActor {
 impl Actor for ExampleActor {
 	fn on_begin_play(&self) {
 		println!("begin_play id={:?}", self.get_id());
+		self.health.set(70);
 	}
 
-	fn on_tick(&self, dt: f64) {
-		println!("tick {dt} id={:?}", self.get_id());
+	fn on_tick(&self, _dt: f64) {
+		// println!("tick {dt} id={:?}", self.get_id());
 	}
 
 	fn name(&self) -> &'static str {

@@ -5,15 +5,22 @@ edition = "2024"
 
 
 [dependencies]
+# -- Farmer Replaced
+# ui = { path = "../ui" }
 # -- Tracing
 tracing = { version = "0.1", features = ["default"] }
 # -- Async
-tokio = { version = "1", features = ["macros","rt-multi-thread", "io-std", "test-util"]}
+tokio = { version = "1", features = [
+    "macros",
+    "rt-multi-thread",
+    "io-std",
+    "test-util",
+] }
 futures = "0.3"
 tokio-stream = "0.1"
 parking_lot = "0.12"
 # -- Others
-derive_more = {version = "2.0", features = ["from", "display"] }
+derive_more = { version = "2.0", features = ["from", "display"] }
 lazy_static = "1.4.0"
 spin_sleep_util = "0.1"
 nalgebra = { version = "0.34.1", default-features = false, features = ["std"] }

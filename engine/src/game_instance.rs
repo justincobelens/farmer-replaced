@@ -6,7 +6,7 @@ use std::{
 
 use parking_lot::RwLock;
 
-use crate::{World, actor::ActorId, tick::runtime::TickRuntime};
+use crate::{World, actor::ActorId, tick::runtime::TickRuntime, ui::ui_object::UiObject};
 
 static INSTANCE: OnceLock<Arc<GameInstance>> = OnceLock::new();
 
@@ -22,12 +22,16 @@ pub struct GameInstance {
 	worlds: RwLock<HashMap<WorldId, Arc<World>>>,
 	active: RwLock<Option<WorldId>>,
 	tick: Arc<TickRuntime>,
+	ui: Arc<UiObject>,
 }
 
 impl GameInstance {
 	fn new() -> Self {
 		let tick = TickRuntime::variable(1.0);
 		tick.clone().start_thread();
+		let ui = Arc::new(UiObject::new());
+
+		tick.subscribe(ui.clone());
 
 		Self {
 			next_world_id: AtomicU64::new(1),
@@ -35,6 +39,7 @@ impl GameInstance {
 			worlds: RwLock::new(HashMap::new()),
 			active: RwLock::new(None),
 			tick,
+			ui,
 		}
 	}
 
@@ -61,6 +66,10 @@ impl GameInstance {
 			return false;
 		}
 		*self.active.write() = Some(id);
+
+		let world = self.active_world();
+		self.ui.with_world(world);
+
 		true
 	}
 

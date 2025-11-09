@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
 default-members = ["engine"]
-members = ["engine", "game"]
+members = ["engine", "game", "ui"]
 
 [profile.dev]
 debug = 0
