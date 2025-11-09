@@ -7,15 +7,17 @@ actor! {
 	}
 }
 
-impl ExampleActor {
-	pub fn example_method(&self) {
-		println!("This is an example method called by: {}", self.label.get());
-	}
-}
-
 impl Actor for ExampleActor {
 	fn on_begin_play(&self) {
 		println!("begin_play id={:?}", self.get_id());
 		self.health.set(70);
 	}
+
+	fn on_tick(&self, _dt: f64) {
+		self.add_x(1.0);
+	}
+}
+
+impl ExampleActor {
+	pub fn add_x(&self, _x: f32) {}
 }

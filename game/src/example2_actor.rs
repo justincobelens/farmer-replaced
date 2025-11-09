@@ -7,14 +7,6 @@ actor! {
 	}
 }
 
-impl Example2Actor {
-	pub fn another_example_method(&self) {
-		println!("from another exmple method health: {:?}", self.health.get());
-
-		println!("This is an example method, called by: {}", self.label.get());
-	}
-}
-
 impl Actor for Example2Actor {
 	fn on_begin_play(&self) {
 		self.health.set(32);
