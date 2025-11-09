@@ -20,20 +20,12 @@ impl Actor for Example2Actor {
 		self.health.set(32);
 	}
 
-	fn on_end_play(&self) {
-		println!("Default end_play()");
-	}
-
 	fn on_tick(&self, _dt: f64) {
 		if !self.check_health(30) {
 			println!("health unhealthy, fixing it");
 			self.health.set(100);
 		}
 		self.health.set(self.health.get() - 1);
-	}
-
-	fn name(&self) -> &'static str {
-		std::any::type_name::<Self>()
 	}
 }
 
