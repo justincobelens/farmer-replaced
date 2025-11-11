@@ -13,11 +13,15 @@ use crate::{World, actor::ActorId, tick::runtime::TickRuntime, ui::ui_object::Ui
 
 static INSTANCE: OnceLock<Arc<GameInstance>> = OnceLock::new();
 
-pub fn instance() -> Arc<GameInstance> {
-	INSTANCE.get_or_init(|| Arc::new(GameInstance::new())).clone()
+pub(crate) fn instance() -> Arc<GameInstance> {
+	INSTANCE
+		.get_or_init(|| Arc::new(GameInstance::new()))
+		.clone()
 }
 
 pub type WorldId = u64;
+type RendertFn = Box<dyn Fn(&World) + Send + Sync>;
+type ExtractFn = Box<dyn Fn(&World) + Send + Sync>;
 
 pub struct GameInstance {
 	next_world_id: AtomicU64,
@@ -27,6 +31,8 @@ pub struct GameInstance {
 	tick: Arc<TickRuntime>,
 	ui: Arc<UiObject>,
 	running: AtomicBool,
+	extract: RwLock<Option<ExtractFn>>,
+	render: RwLock<Option<RendertFn>>,
 }
 
 impl GameInstance {
@@ -45,6 +51,8 @@ impl GameInstance {
 			tick,
 			ui,
 			running: AtomicBool::new(true),
+			extract: RwLock::new(None),
+			render: RwLock::new(None),
 		}
 	}
 
@@ -88,6 +96,21 @@ impl GameInstance {
 		self.worlds.read().get(&id).cloned()
 	}
 
+	pub fn update(&self) {
+		let active = self.active_world().unwrap();
+		if let Some(extract) = &*self.extract.read() {
+			extract(active.as_ref());
+		}
+
+		if let Some(render) = &*self.render.read() {
+			render(active.as_ref());
+		}
+	}
+
+	pub(crate) fn start_tick(&self) {
+		self.tick.resume();
+	}
+
 	pub fn resume_tick(&self) {
 		self.tick.resume();
 	}
@@ -118,5 +141,13 @@ impl GameInstance {
 			}
 			thread::sleep(Duration::from_millis(16));
 		}
+	}
+
+	pub fn set_extract(&self, system: ExtractFn) {
+		*self.extract.write() = Some(system);
+	}
+
+	pub fn set_render(&self, system: RendertFn) {
+		*self.render.write() = Some(system);
 	}
 }

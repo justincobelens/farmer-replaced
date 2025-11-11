@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use crate::{
 	actor::{Actor, ActorId, ActorRegistry},
-	instance,
+	game_instance::instance,
 	tick::listener::TickListener,
 };
 
@@ -60,5 +60,7 @@ impl World {
 impl TickListener for World {
 	fn on_tick(&self, dt: f64) {
 		self.registry.broadcast_tick(dt);
+
+		instance().update();
 	}
 }
