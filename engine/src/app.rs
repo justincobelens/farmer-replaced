@@ -5,9 +5,7 @@ use crate::{
 	game_instance::{GameInstance, instance},
 };
 
-type SystemFn = Box<dyn FnMut()>;
-
-type WorldFn = SystemFn;
+type WorldFn = Box<dyn FnMut()>;
 type RendertFn = Box<dyn Fn(&World) + Send + Sync>;
 type ExtractFn = Box<dyn Fn(&World) + Send + Sync>;
 
