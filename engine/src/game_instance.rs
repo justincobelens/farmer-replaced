@@ -83,17 +83,17 @@ impl GameInstance {
 		self.worlds.read().get(&id).cloned()
 	}
 
-	pub fn update(&mut self) {
-		let active = self.active_world().unwrap();
+	pub fn update(&self) {
+		let main_world = self.active_world().unwrap();
 
-		let mut cloned = active.clone();
+		let mut render_world = main_world.as_ref().clone();
 
-		if let Some(extract) = &*self.extract.read() {
-			extract(active.as_ref(), &mut cloned);
+		if let Some(extract_fn) = &*self.extract.read() {
+			extract_fn(main_world.as_ref(), &mut render_world);
 		}
 
 		if let Some(render) = &*self.render.read() {
-			render(active.as_ref());
+			render(&render_world);
 		}
 
 		// todo ui commands should be here

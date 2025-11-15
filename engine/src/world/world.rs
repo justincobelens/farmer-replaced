@@ -6,6 +6,7 @@ use crate::{
 	tick::listener::TickListener,
 };
 
+#[derive(Clone)]
 pub struct World {
 	registry: Arc<ActorRegistry>,
 }
@@ -55,11 +56,16 @@ impl World {
 	pub fn shutdown(&self) {
 		self.registry.broadcast_end_play();
 	}
+
+	pub fn has_changes(&self) -> bool {
+		todo!("Not implemented yet")
+	}
 }
 
 impl TickListener for World {
 	fn on_tick(&self, dt: f64) {
 		self.registry.broadcast_tick(dt);
+		println!("Tick dt={:?}", dt);
 
 		instance().update();
 	}

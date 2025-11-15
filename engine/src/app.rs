@@ -8,7 +8,7 @@ use crate::{
 };
 
 pub type RendertFn = Box<dyn Fn(&World) + Send + Sync>;
-pub type ExtractFn = Box<dyn Fn(&World, &mut Arc<World>) + Send + Sync>;
+pub type ExtractFn = Box<dyn Fn(&World, &mut World) + Send + Sync>;
 pub type CommandsFn = Box<dyn Fn(Commands) + Send + Sync>;
 
 pub struct App {
@@ -40,7 +40,7 @@ impl App {
 
 	pub fn set_extract<F>(&mut self, system: F) -> &mut Self
 	where
-		F: Fn(&World, &mut Arc<World>) + Send + Sync + 'static,
+		F: Fn(&World, &mut World) + Send + Sync + 'static,
 	{
 		self.extract = Some(Box::new(system));
 		self

@@ -7,7 +7,7 @@ fn setup(commands: Commands) {
 	commands.spawn(Example2Actor::new(Transform::default()));
 }
 
-fn extract(main_world: &World, render_world: &mut Arc<World>) {
+fn extract(main_world: &World, _render_world: &mut World) {
 	// this func should sync the main world with the render world
 	// this is just filler code
 	if let Some(actor) = main_world.get_actor_of_class::<Example2Actor>() {
