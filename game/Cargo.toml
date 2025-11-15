@@ -7,6 +7,8 @@ edition = "2024"
 [dependencies]
 # -- Farmer Replaced
 engine = { path = "../engine" }
+ui = { path = "../ui" }
+
 
 # -- Tracing
 tracing = { version = "0.1", features = ["default"] }

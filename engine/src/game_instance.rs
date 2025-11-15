@@ -9,7 +9,7 @@ use std::{
 
 use parking_lot::RwLock;
 
-use crate::{World, actor::ActorId, tick::runtime::TickRuntime, ui::ui_object::UiObject};
+use crate::{World, actor::ActorId, app::ExtractFn, tick::runtime::TickRuntime};
 
 static INSTANCE: OnceLock<Arc<GameInstance>> = OnceLock::new();
 
@@ -21,7 +21,6 @@ pub(crate) fn instance() -> Arc<GameInstance> {
 
 pub type WorldId = u64;
 type RendertFn = Box<dyn Fn(&World) + Send + Sync>;
-type ExtractFn = Box<dyn Fn(&World) + Send + Sync>;
 
 pub struct GameInstance {
 	next_world_id: AtomicU64,
@@ -29,7 +28,6 @@ pub struct GameInstance {
 	worlds: RwLock<HashMap<WorldId, Arc<World>>>,
 	active: RwLock<Option<WorldId>>,
 	tick: Arc<TickRuntime>,
-	ui: Arc<UiObject>,
 	running: AtomicBool,
 	extract: RwLock<Option<ExtractFn>>,
 	render: RwLock<Option<RendertFn>>,
@@ -39,9 +37,6 @@ impl GameInstance {
 	fn new() -> Self {
 		let tick = TickRuntime::variable(1.0);
 		tick.clone().start_thread();
-		let ui = Arc::new(UiObject::new());
-
-		tick.subscribe(ui.clone());
 
 		Self {
 			next_world_id: AtomicU64::new(1),
@@ -49,7 +44,6 @@ impl GameInstance {
 			worlds: RwLock::new(HashMap::new()),
 			active: RwLock::new(None),
 			tick,
-			ui,
 			running: AtomicBool::new(true),
 			extract: RwLock::new(None),
 			render: RwLock::new(None),
@@ -80,9 +74,6 @@ impl GameInstance {
 		}
 		*self.active.write() = Some(id);
 
-		let world = self.active_world();
-		self.ui.with_world(world);
-
 		true
 	}
 
@@ -92,19 +83,20 @@ impl GameInstance {
 		self.worlds.read().get(&id).cloned()
 	}
 
-	pub fn get_world(&self, id: WorldId) -> Option<Arc<World>> {
-		self.worlds.read().get(&id).cloned()
-	}
-
-	pub fn update(&self) {
+	pub fn update(&mut self) {
 		let active = self.active_world().unwrap();
+
+		let mut cloned = active.clone();
+
 		if let Some(extract) = &*self.extract.read() {
-			extract(active.as_ref());
+			extract(active.as_ref(), &mut cloned);
 		}
 
 		if let Some(render) = &*self.render.read() {
 			render(active.as_ref());
 		}
+
+		// todo ui commands should be here
 	}
 
 	pub(crate) fn start_tick(&self) {

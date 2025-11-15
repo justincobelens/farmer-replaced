@@ -1,10 +1,11 @@
 pub mod actor;
 pub mod app;
+pub mod commands;
 pub mod error;
 pub mod game_instance;
 pub mod math;
 pub mod tick;
-pub mod ui;
+// pub mod ui;
 pub mod utility;
 pub mod world;
 

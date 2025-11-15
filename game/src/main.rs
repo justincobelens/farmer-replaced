@@ -1,36 +1,28 @@
-use engine::{App, World, math::Transform, utility::functions::new_active_world};
+use engine::{App, World, commands::Commands, math::Transform};
 use game::{Example2Actor, ExampleActor};
+use ui::ui_object::UiObject;
 
-fn world() {
-	let world = new_active_world();
-
-	world.spawn_actor(ExampleActor::new(Transform::default()));
-	world.spawn_actor(Example2Actor::new(Transform::default()));
+fn setup(commands: Commands) {
+	commands.spawn(ExampleActor::new(Transform::default()));
+	commands.spawn(Example2Actor::new(Transform::default()));
 }
 
-fn extract(world: &World) {
-	if let Some(actor) = world.get_actor_of_class::<Example2Actor>() {
+fn extract(main_world: &World, render_world: &mut Arc<World>) {
+	// this func should sync the main world with the render world
+	// this is just filler code
+	if let Some(actor) = main_world.get_actor_of_class::<Example2Actor>() {
 		let health = actor.health.get();
 		println!("Actor health: {:?}", health);
-
-		if health >= 99 {
-			world.spawn_actor(Example2Actor::new(Transform::default()));
-		}
-
-		if health <= 95 {
-			world.spawn_actor(ExampleActor::new(Transform::default()));
-		}
 	}
 }
 
 fn render(world: &World) {
-	let count = world.get_actor_count();
-	println!("called render with count: {:?}", count);
+	UiObject::render(world);
 }
 
 fn main() {
 	App::new()
-		.add_world(world)
+		.set_setup(setup)
 		.set_extract(extract)
 		.set_render(render)
 		.run();

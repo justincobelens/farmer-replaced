@@ -2,16 +2,18 @@ use std::sync::Arc;
 
 use crate::{
 	World,
+	commands::Commands,
 	game_instance::{GameInstance, instance},
+	utility::functions::new_active_world,
 };
 
-type WorldFn = Box<dyn FnMut()>;
-type RendertFn = Box<dyn Fn(&World) + Send + Sync>;
-type ExtractFn = Box<dyn Fn(&World) + Send + Sync>;
+pub type RendertFn = Box<dyn Fn(&World) + Send + Sync>;
+pub type ExtractFn = Box<dyn Fn(&World, &mut Arc<World>) + Send + Sync>;
+pub type CommandsFn = Box<dyn Fn(Commands) + Send + Sync>;
 
 pub struct App {
 	game_instance: Arc<GameInstance>,
-	world: Option<WorldFn>,
+	setup: Option<CommandsFn>,
 	extract: Option<ExtractFn>,
 	render: Option<RendertFn>,
 }
@@ -21,23 +23,24 @@ impl App {
 		let game_instance = instance();
 		App {
 			game_instance,
-			world: None,
+			setup: None,
 			extract: None,
+
 			render: None,
 		}
 	}
 
-	pub fn add_world<F>(&mut self, system: F) -> &mut Self
+	pub fn set_setup<F>(&mut self, system: F) -> &mut Self
 	where
-		F: FnMut() + 'static,
+		F: Fn(Commands) + Send + Sync + 'static,
 	{
-		let _ = self.world.insert(Box::new(system));
+		let _ = self.setup.insert(Box::new(system));
 		self
 	}
 
 	pub fn set_extract<F>(&mut self, system: F) -> &mut Self
 	where
-		F: Fn(&World) + Send + Sync + 'static,
+		F: Fn(&World, &mut Arc<World>) + Send + Sync + 'static,
 	{
 		self.extract = Some(Box::new(system));
 		self
@@ -52,7 +55,11 @@ impl App {
 	}
 
 	pub fn run(&mut self) {
-		self.world.as_mut().expect("No world set")(); // panic if no world present
+		if let Some(setup) = &self.setup {
+			let world = new_active_world();
+			let commands = Commands::new(world.clone());
+			setup(commands);
+		}
 
 		if let Some(extract_fn) = self.extract.take() {
 			self.game_instance.set_extract(extract_fn);

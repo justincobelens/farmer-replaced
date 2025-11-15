@@ -9,7 +9,7 @@ actor! {
 
 impl Actor for ExampleActor {
 	fn on_begin_play(&self) {
-		println!("begin_play id={:?}", self.get_id());
+		println!("begin_play id={:?} and name={:?}", self.get_id(), self.name());
 		self.health.set(70);
 	}
 

@@ -9,6 +9,8 @@ actor! {
 
 impl Actor for Example2Actor {
 	fn on_begin_play(&self) {
+		println!("begin_play id={:?} and name={:?}", self.get_id(), self.name());
+
 		self.health.set(32);
 	}
 
