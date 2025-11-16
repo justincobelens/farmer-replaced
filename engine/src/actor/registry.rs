@@ -22,7 +22,7 @@ impl ActorRegistry {
 
 	/// Add an actor. The actor must already have a valid id.
 	pub fn add_actor<A: Actor>(&self, actor: Arc<A>) {
-		let id = actor.get_id_internal();
+		let id = actor.get_id();
 		debug_assert!(id.is_valid(), "adding actor with an invalid id");
 
 		let entry = ActorEntry {
@@ -101,7 +101,7 @@ impl ActorRegistry {
 		}
 	}
 
-	fn get_actor_snapshot(&self) -> Vec<Arc<dyn Actor>> {
+	pub fn get_actor_snapshot(&self) -> Vec<Arc<dyn Actor>> {
 		let entries = self.entries.read();
 		entries.iter().map(|e| e.actor.clone()).collect()
 	}

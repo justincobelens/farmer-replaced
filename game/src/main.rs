@@ -1,10 +1,19 @@
-use engine::{App, World, commands::Commands, math::Transform};
+use engine::{
+	App, World,
+	commands::Commands,
+	math::{Transform, Vector},
+};
 use game::{Example2Actor, ExampleActor};
 use ui::ui_object::UiObject;
 
 fn setup(commands: Commands) {
-	commands.spawn(ExampleActor::new(Transform::default()));
+	let a1 = commands.spawn(ExampleActor::new(Transform::default()));
 	commands.spawn(Example2Actor::new(Transform::default()));
+
+	let new_loc = Vector::new(10.0, 20.0, 10.0);
+	let mut t1 = a1.transform.get();
+	t1.set_location(new_loc);
+	a1.transform.set(t1);
 }
 
 fn extract(main_world: &World, _render_world: &mut World) {

@@ -52,6 +52,10 @@ impl World {
 		self.registry.get_all_of_class()
 	}
 
+	pub fn get_all_actors(&self) -> Vec<Arc<dyn Actor>> {
+		self.registry.get_actor_snapshot()
+	}
+
 	/// Graceful shutdown
 	pub fn shutdown(&self) {
 		self.registry.broadcast_end_play();

@@ -26,7 +26,18 @@ macro_rules! actor {
 
             pub fn get_id(&self) -> $crate::actor::ActorId{
                 // delegate to engine trait method so the logic stays in one place
-                <Self as $crate::actor::base::ActorBase>::get_id_internal(self)
+                <Self as $crate::actor::base::ActorBase>::get_id(self)
+            }
+
+            pub fn get_transform(&self) -> $crate::math::Transform {
+                // delegate to engine trait method so the logic stays in one place
+               <Self as $crate::actor::base::ActorBase>::get_transform(self)
+            }
+        }
+
+        impl $crate::actor::base::HasTransform for $name {
+            fn transform(&self) -> &$crate::actor::Property<$crate::math::Transform> {
+                &self.transform
             }
         }
 
