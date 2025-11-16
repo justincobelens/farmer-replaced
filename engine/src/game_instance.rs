@@ -35,7 +35,7 @@ pub struct GameInstance {
 
 impl GameInstance {
 	fn new() -> Self {
-		let tick = TickRuntime::variable(1.0);
+		let tick = TickRuntime::variable(10.0);
 		tick.clone().start_thread();
 
 		Self {
