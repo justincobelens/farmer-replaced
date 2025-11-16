@@ -6,8 +6,14 @@ impl UiObject {
 	pub fn render(world: &World) {
 		let actors = world.get_all_actors();
 
-		let position_1 = actors.first().unwrap().get_transform().location;
+		for actor in actors {
+			let transform = actor.get_transform();
+			let loc = transform.location;
 
-		println!("Actor pos: {:?}", position_1);
+			let x = loc.x;
+			let y = loc.y;
+
+			println!("Actor pos: {:?}:{:?}", x, y);
+		}
 	}
 }
