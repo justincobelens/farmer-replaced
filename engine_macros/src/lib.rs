@@ -11,7 +11,7 @@ pub fn derive_resource(input: TokenStream) -> TokenStream {
 	let name = &ast.ident;
 
 	let expanded = quote! {
-		impl Resource for #name {}
+		impl engine::resource::Resource for #name {}
 	};
 
 	TokenStream::from(expanded)

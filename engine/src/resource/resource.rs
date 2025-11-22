@@ -25,3 +25,21 @@ where
 // If only ResourceLike is used, then any type that is Send + Sync + 'static
 // would be considered a resource, which is not the intended behavior.
 pub trait Resource: ResourceLike {}
+
+pub struct Res<T: Resource> {
+	inner: T,
+}
+
+impl<T: Resource> Res<T> {
+	pub fn new(inner: T) -> Self {
+		Self { inner }
+	}
+
+	pub fn get(&self) -> &T {
+		&self.inner
+	}
+
+	pub fn get_mut(&mut self) -> &mut T {
+		&mut self.inner
+	}
+}

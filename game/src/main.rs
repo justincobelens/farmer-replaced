@@ -1,11 +1,13 @@
-use engine::{App, World, commands::Commands, math::Transform, resource::Resource};
+use engine::{App, World, commands::Commands, math::Transform, resource::resource::Res};
 use engine_macros::Resource;
 use ui::render::render_pipeline;
 
 use game::{Example2Actor, ExampleActor};
 
 #[derive(Resource)]
-pub struct GameState;
+pub struct GameState {
+	tick_count: u64,
+}
 
 fn main() {
 	App::new()
@@ -13,6 +15,10 @@ fn main() {
 		.set_extract(extract)
 		.set_render(render)
 		.run();
+}
+
+fn update_game_state(mut game_state: Res<GameState>) {
+	game_state.get_mut().tick_count += 1;
 }
 
 fn setup(commands: Commands) {
