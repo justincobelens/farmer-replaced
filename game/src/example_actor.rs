@@ -19,16 +19,16 @@ impl Actor for ExampleActor {
 	fn on_tick(&self, _dt: f64) {
 		self.add_x(1.0);
 
-		if self.get_transform().location.x > 20.0 {
+		if self.get_transform().location.x > 200.0 {
 			let mut new_transform = Transform::default();
 
 			let y = self.transform.get().location.y;
 			new_transform.set_location(Vector::new(0., y, 0.));
 			self.transform.set(new_transform);
-			self.add_y(1.0);
+			self.add_y(10.0);
 		}
 
-		if self.get_transform().location.y > 35.0 {
+		if self.get_transform().location.y > 200.0 {
 			let mut new_transform = Transform::default();
 
 			let x = self.transform.get().location.x;

@@ -6,15 +6,19 @@ use crate::{
 	tick::listener::TickListener,
 };
 
+use parking_lot::RwLock;
+
 #[derive(Clone)]
 pub struct World {
 	registry: Arc<ActorRegistry>,
+	last_tick_time: Arc<RwLock<f64>>,
 }
 
 impl World {
 	pub fn new() -> Arc<World> {
 		Arc::new(Self {
 			registry: Arc::new(ActorRegistry::new()),
+			last_tick_time: Arc::new(RwLock::new(0.0)),
 		})
 	}
 
@@ -64,12 +68,17 @@ impl World {
 	pub fn has_changes(&self) -> bool {
 		todo!("Not implemented yet")
 	}
+
+	fn set_last_tick_time(&self, dt: f64) {
+		*self.last_tick_time.write() = dt;
+	}
 }
 
 impl TickListener for World {
 	fn on_tick(&self, dt: f64) {
 		self.registry.broadcast_tick(dt);
 		println!("Tick dt={:?}", dt);
+		self.set_last_tick_time(dt);
 
 		instance().update();
 	}

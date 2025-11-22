@@ -1,6 +1,6 @@
 use engine::{App, World, commands::Commands, math::Transform};
 use game::{Example2Actor, ExampleActor};
-use ui::ui_object::UiObject;
+use ui::render::render_pipeline;
 
 fn setup(commands: Commands) {
 	commands.spawn(ExampleActor::new(Transform::default()));
@@ -17,7 +17,7 @@ fn extract(main_world: &World, _render_world: &mut World) {
 }
 
 fn render(world: &World) {
-	UiObject::render(world);
+	render_pipeline(world);
 }
 
 fn main() {
