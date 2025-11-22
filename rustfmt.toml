@@ -2,6 +2,6 @@
 
 edition = "2024"
 hard_tabs = true # no comment
-max_width = 120
+max_width = 100
 chain_width = 60
 array_width = 60

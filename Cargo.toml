@@ -15,3 +15,6 @@ result_large_err = "allow"
 wildcard_imports = "deny"
 # unused = { level = "allow", priority = -1 } # For exploratory dev.
 # missing_docs = "warn"
+
+[workspace.dependencies]
+winit = { version = "0.30.12", default-features = false }
