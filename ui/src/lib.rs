@@ -1,3 +1,3 @@
 pub mod app;
-pub mod panel;
 pub mod render;
+pub mod window;
