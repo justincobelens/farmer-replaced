@@ -6,18 +6,18 @@ use eframe::{
 };
 use engine::World;
 
-use crate::panel::Panel;
+use crate::window::Window;
 
 pub struct App {
 	receiver: Receiver<Arc<World>>,
 	world: Option<Arc<World>>,
 	latest_points: Vec<(f32, f32)>,
-	panel: Panel,
+	panel: Window,
 }
 
 impl App {
 	pub fn new(receiver: Receiver<Arc<World>>) -> Self {
-		let panel = Panel::new(200.0, 200.0);
+		let panel = Window::new(200.0, 200.0);
 		Self {
 			receiver,
 			world: None,
@@ -112,6 +112,9 @@ impl eframe::App for App {
 		self.pull_latest();
 		self.extract_latest_transforms();
 		ctx.request_repaint();
+
+		// let pointer = ctx.pointer_latest_pos();
+		// println!("Pointer position: {:?}", pointer);
 
 		egui::CentralPanel::default().show(ctx, |ui| self.show(ui));
 	}

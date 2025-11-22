@@ -3,11 +3,16 @@ name = "game"
 version = "0.1.0"
 edition = "2024"
 
+[[bin]]
+name = "game"
+path = "src/main.rs"
+
 
 [dependencies]
 # -- Farmer Replaced
 engine = { path = "../engine" }
 ui = { path = "../ui" }
+engine_macros.workspace = true
 
 
 # -- Tracing

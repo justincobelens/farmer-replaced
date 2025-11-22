@@ -953,6 +953,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "engine_macros"
+version = "0.1.0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "enumflags2"
 version = "0.7.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1247,6 +1256,7 @@ version = "0.1.0"
 dependencies = [
  "derive_more",
  "engine",
+ "engine_macros",
  "futures",
  "lazy_static",
  "tokio",
